@@ -5,5 +5,5 @@ xml_to_hash
 Nokogiriを使ってxmlをhashに変換
 
 ### Dependency
-bundler
-nokogiri
+* bundler
+* nokogiri
