@@ -14,7 +14,7 @@ fiber = Fiber.new {
     system "clear"
     enum = f.each_line
     lazy =  enum.lazy.map {|line| line }
-    lines_per_take = 3
+    lines_per_take = 20
     
     puts lines = lazy.take(lines_per_take).force
     taked_lines = lines.length
@@ -28,7 +28,9 @@ fiber = Fiber.new {
         taked_lines += lines.length
       when "b"
         lines_will_take = taked_lines - lines_per_take
-        next if lines_will_take < 1
+        if lines_will_take < lines_per_take
+          lines_will_take = lines_per_take
+        end
         
         system "clear"
         enum.rewind
@@ -40,7 +42,9 @@ fiber = Fiber.new {
         taked_lines += lines.length
       when "k"
         lines_will_take = taked_lines - 1
-        next if lines_will_take < lines_per_take
+        if lines_will_take < lines_per_take
+          lines_will_take = lines_per_take
+        end
         
         system "clear"
         enum.rewind
