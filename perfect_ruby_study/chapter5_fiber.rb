@@ -15,17 +15,19 @@ fiber = Fiber.new {
     enum = f.each_line
     lazy =  enum.lazy.map {|line| line }
     lines_per_take = 20
+    eof = false
     
     puts lines = lazy.take(lines_per_take).force
     taked_lines = lines.length
 
     loop do
-      input = Fiber.yield(lines)
+      input = Fiber.yield(eof)
 
       case input
       when "f"
         puts lines = lazy.take(lines_per_take).force
         taked_lines += lines.length
+        eof = lines.length == 0
       when "b"
         lines_will_take = taked_lines - lines_per_take
         if lines_will_take < lines_per_take
@@ -37,9 +39,11 @@ fiber = Fiber.new {
 
         puts lines = lazy.take(lines_will_take).force
         taked_lines = lines.length
+        eof = false
       when "j"
         puts lines = lazy.take(1).force
         taked_lines += lines.length
+        eof = lines.length == 0
       when "k"
         lines_will_take = taked_lines - 1
         if lines_will_take < lines_per_take
@@ -51,6 +55,7 @@ fiber = Fiber.new {
 
         puts lines = lazy.take(lines_will_take).force
         taked_lines = lines.length
+        eof = false
       end
     end
   end
@@ -60,9 +65,9 @@ fiber.resume
 
 while input = STDIN.noecho(&:gets).chop
   if /[fbjk]/ === input
-    lines = fiber.resume(input)
+    eof = fiber.resume(input)
 
-    if lines.length == 0
+    if eof
       puts "-----[EOF]-----"
       exit 0
     end
